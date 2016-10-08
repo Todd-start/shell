@@ -1,0 +1,31 @@
+#!/usr/bin/python
+# coding=utf-8
+import redis
+import time
+
+__author__ = 'zhaoyalong'
+def ana_redis():
+    db = redis.Redis(host='127.0.0.1', port=63790)
+    cursor = '0'
+
+    while 1:
+        cursor, keys = db.scan(cursor=cursor,count=500)
+
+        for k in keys:
+            t = str(db.type(k))
+
+            if t in ('string',):
+                pass
+            elif t in ('set'):
+                print 'set', k, db.scard(k)
+            elif t in ('zset',):
+                print 'zset', k, db.zcard(k)
+            elif t in ('list',):
+                print 'list', k, db.llen(k)
+            else:
+                print t, k
+
+        if not cursor:
+            break
+if __name__ == '__main__':
+   ana_redis()
